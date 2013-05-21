@@ -9,6 +9,7 @@ class Gruff::Spider < Gruff::Base
   # Hide all text
   attr_reader :hide_text
   attr_accessor :hide_axes
+  attr_accessor :hide_levels
   attr_reader :transparent_background
   attr_accessor :rotation
   
@@ -21,9 +22,10 @@ class Gruff::Spider < Gruff::Base
     @hide_title = @hide_text = value
   end
 
-  def initialize(max_value, target_width = 800)
+  def initialize(max_value, target_width = 800, num_levels = 8)
     super(target_width)
     @max_value = max_value
+    @num_levels = num_levels
     @hide_legend = true;
     @rotation = 0
   end
@@ -52,6 +54,9 @@ class Gruff::Spider < Gruff::Base
 
     # Draw axes
     draw_axes(center_x, center_y, radius, additive_angle) unless hide_axes    
+
+    # Draw levels
+    draw_levels(center_x, center_y, radius, additive_angle, @num_levels) unless hide_levels
 
     # Draw polygon
     draw_polygon(center_x, center_y, additive_angle)
@@ -105,6 +110,26 @@ private
 
       current_angle += additive_angle
     end
+  end
+
+  def draw_levels(center_x, center_y, radius, additive_angle, num_levels)
+    return if hide_levels
+
+    return if num_levels <= 0
+    level_radius = radius / num_levels
+    (1..num_levels).each do |level|
+      current_angle = rotation * Math::PI / 180.0
+      points = []
+      @data.size.times do
+        points << center_x + level * level_radius * Math.cos(current_angle)
+        points << center_y + level * level_radius * Math.sin(current_angle)
+        current_angle += additive_angle
+      end
+      @d.stroke_width 2.0
+      @d.stroke('grey')
+      @d.fill_opacity 0.0
+      @d.polygon(*points)
+      end
   end
 
   def draw_polygon(center_x, center_y, additive_angle, color = nil)
