@@ -59,7 +59,7 @@ class Gruff::Spider < Gruff::Base
     draw_levels(center_x, center_y, radius, additive_angle, @num_levels) unless hide_levels
 
     # Draw polygon
-    draw_polygon(center_x, center_y, additive_angle)
+    draw_polygon(center_x, center_y, additive_angle, '#F26B21')
 
     @d.draw(@base_image)
   end
@@ -71,7 +71,7 @@ private
   end
 
   def draw_label(center_x, center_y, angle, radius, amount)
-    r_offset = 50      # The distance out from the center of the pie to get point
+    r_offset = 55      # The distance out from the center of the pie to get point
     x_offset = center_x      # The label points need to be tweaked slightly
     y_offset = center_y + 0  # This one doesn't though
     x = x_offset + ((radius + r_offset) * Math.cos(angle))
@@ -82,7 +82,7 @@ private
     @d.font = @font if @font
     @d.pointsize = scale_fontsize(legend_font_size)
     @d.stroke = 'transparent'
-    @d.font_weight = BoldWeight
+    # @d.font_weight = BoldWeight
     @d.gravity = CenterGravity
     @d.annotate_scaled( @base_image, 
                       0, 0,
@@ -97,7 +97,7 @@ private
 
     @data.each do |data_row|
       @d.stroke(line_color || data_row[DATA_COLOR_INDEX])
-      @d.stroke_width 5.0
+      @d.stroke_width 2.0
 
       x_offset = radius * Math.cos(current_angle)
       y_offset = radius * Math.sin(current_angle)
@@ -142,7 +142,7 @@ private
       current_angle += additive_angle
     end
 
-    @d.stroke_width 1.0
+    @d.stroke_width 0.0
     @d.stroke(color || @marker_color)
     @d.fill(color || @marker_color)
     @d.fill_opacity 0.4
